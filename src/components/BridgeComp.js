@@ -1,47 +1,48 @@
-import WormholeBridge from '@wormhole-foundation/wormhole-connect'
+"use client"
+import { useState, useEffect } from 'react'
+import dynamic from 'next/dynamic'
 import './App.css'
+import { configAptos, configSui } from '../configs/wormHoleConfig'
 
-// import portal from './assets/images/switch-to-portal.png'
-import { configAptos, configSui } from '../../src/configs/wormHoleConfig'
+// Dynamically import WormholeBridge with no SSR
+const WormholeBridge = dynamic(
+  () => import('@wormhole-foundation/wormhole-connect').then((mod) => mod.default),
+  { ssr: false }
+)
 
-function BridgeCom() {
-  const classesChange = () => {
+function App() {
+  const [isSui, setIsSui] = useState(false)
+  const [bodyClass, setBodyClass] = useState('body-container-bg body-container-bg-aptos')
+  const [isClient, setIsClient] = useState(false)
+
+  useEffect(() => {
+    setIsClient(true)
     const routers = window.location.pathname.toString()
-    if (routers === '/sui') {
-      return true
-    } else {
-      return false
-    }
-  }
-  const bodyClassChange = () => {
-    const routers = window.location.pathname.toString()
-    if (routers === '/sui') {
-      return 'body-container-bg'
-    } else {
-      return 'body-container-bg body-container-bg-aptos'
-    }
-  }
+    setIsSui(routers === '/sui')
+    setBodyClass(routers === '/sui' ? 'body-container-bg' : 'body-container-bg body-container-bg-aptos')
+  }, [])
 
   return (
-    <div className={classesChange() ? 'sui' : 'aptos'}>
+    <div className={isSui ? 'sui' : 'aptos'}>
       <div className='header'>
-        <div className={classesChange() ? 'headerAll sui-header' : 'headerAll'}>
+        <div className={isSui ? 'headerAll sui-header' : 'headerAll'}>
           <div className='select'>
             <a
               href='https://www.portalbridge.com/#/transfer'
               target='_self'
               rel='noreferrer'
             >
-              {/* <img alt='' src={portal} /> */}
               <span>Switch to Portal Bridge</span>
             </a>
           </div>
         </div>
       </div>
-      <WormholeBridge config={classesChange() ? configSui : configAptos} />
-      <div className={bodyClassChange()}></div>
+      {isClient && (
+        <WormholeBridge config={isSui ? configSui : configAptos} />
+      )}
+      <div className={bodyClass}></div>
     </div>
   )
 }
 
-export default BridgeCom
+export default App

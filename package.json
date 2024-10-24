@@ -9,8 +9,10 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@mui/material": "^5.16.7",
     "@mysten/sui": "^1.13.0",
     "@mysten/sui.js": "^0.20.0",
+    "@pythnetwork/pyth-sui-js": "^2.1.0",
     "@suiet/wallet-kit": "^0.3.3",
     "@wormhole-foundation/sdk": "^0.10.7",
     "@wormhole-foundation/wormhole-connect": "^1.1.2",
