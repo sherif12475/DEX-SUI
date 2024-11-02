@@ -1,11 +1,36 @@
-import React from 'react'
+"use client"
+import { useState, useEffect } from 'react'
+import dynamic from 'next/dynamic'
+import './App.css'
 import Link from "next/link";
 
-import BridgeCom from  '../../components/BridgeComp'
-function page() {
-  return (
-    <div className="bg-[#0a0e1d] min-h-screen text-white">
-    <header className="flex items-center p-6 bg-[#00072D]">
+import { configAptos, configSui } from '../configs/wormHoleConfig'
+
+// Dynamically import WormholeBridge with no SSR
+const WormholeBridge = dynamic(
+  () => import('@wormhole-foundation/wormhole-connect').then((mod) => mod.default),
+  { ssr: false }
+)
+
+function App() {
+  const [isSui, setIsSui] = useState(false)
+  const [bodyClass, setBodyClass] = useState('body-container-bg body-container-bg-aptos')
+  const [isClient, setIsClient] = useState(false)
+
+  useEffect(() => {
+    setIsClient(true)
+    const routers = window.location.pathname.toString()
+    setIsSui(routers === '/sui')
+    setBodyClass(routers === '/sui' ? 'body-container-bg' : 'body-container-bg body-container-bg-aptos')
+  }, [])
+
+  return (  <div className="bg-[#0a0e1d] min-h-screen text-white">
+   
+ 
+ 
+    <div className={isSui ? 'sui' : 'aptos'}>
+      <div className='header'>
+      <header className="flex items-center p-6 bg-[#00072D]">
       <div className="flex items-center w-1/4">
         <svg className="w-8 h-8 mr-2" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M22 12C20.6868 12 19.6868 11.7071 18.2929 11.2929C16.9289 10.8787 15.3033 10.3431 13 10.3431C10.6967 10.3431 9.07107 10.8787 7.70711 11.2929C6.31321 11.7071 5.31321 12 4 12" stroke="#3B82F6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
@@ -40,18 +65,33 @@ function page() {
           <button 
             className="text-white hover:text-gray-300 transition-colors p-2 relative z-10"
           >
-            <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996-.608 2.296-.07 2.572-1.065z" />
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-            </svg>
+        <div className={isSui ? 'headerAll sui-header' : 'headerAll'}>
+          <div className='select'>
+            <a
+              href='https://www.portalbridge.com/#/transfer'
+              target='_self'
+              rel='noreferrer'
+            >
+              <span>Switch to Portal Bridge</span>
+            </a>
+          </div>
+        </div>
           </button>
          
         </div>
       </div>
     </header>
-      <BridgeCom />
+       
+      </div>
+      {isClient && (
+        <WormholeBridge config={isSui ? configSui : configAptos} />
+      )}
+      <div className={bodyClass}></div>
     </div>
+    </div>
+
+
   )
 }
 
-export default page
+export default App
